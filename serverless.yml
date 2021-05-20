@@ -7,6 +7,34 @@ provider:
   name: aws
   runtime: nodejs12.x
   lambdaHashingVersion: '20201221'
+  region: ap-southeast-2
+  environment:
+    userTableName: ${self:custom.userTableName}
+  iamRoleStatements:
+    - Effect: Allow
+      Action: 
+        - dynamodb:*
+      Resource: '*'
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dynamodb-local
+
+package:
+  individually: true
+
+custom:
+  userTableName: slsfileuploaderUsers
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    migration:
+      dir: offline/migrations
 
 functions:
   hello:
@@ -15,3 +43,31 @@ functions:
       - http:
           path: /
           method: get
+  getUser: 
+    handler: lambdas/users/getUser.handler
+    events:
+      - http:
+          path: users/{ID}
+          method: GET
+          cors: true
+  createUser: 
+    handler: lambdas/users/createUser.handler
+    events:
+      - http:
+          path: users/{ID}
+          method: POST 
+          cors: true
+
+resources:
+  Resources:
+    SlsFileUploaderUserTable:
+      Type: AWS::DynamoDB::Table
+      Properties: 
+        TableName: ${self:custom.userTableName}
+        AttributeDefinitions: 
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
