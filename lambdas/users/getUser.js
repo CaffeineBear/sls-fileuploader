@@ -16,7 +16,7 @@ exports.handler = async event => {
     return null;
   })
   if (user) {
-    return Responses(200, data);
+    return Responses(200, user);
   }
   return Responses(400, {message: 'No ID in data'});
 };
