@@ -10,6 +10,8 @@ provider:
   region: ap-southeast-2
   environment:
     userTableName: ${self:custom.userTableName}
+    s3bucketName: ${self:custom.s3bucketName}
+    region: ap-southeast-2
   iamRoleStatements:
     - Effect: Allow
       Action: 
@@ -26,6 +28,8 @@ package:
 
 custom:
   userTableName: slsfileuploaderUsers
+  s3bucketName: yong-family-storage
+  familyStorageUserPool: arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
   dynamodb:
     stages:
       - dev
@@ -47,6 +51,8 @@ functions:
     handler: lambdas/users/getUser.handler
     events:
       - http:
+          authorizer:
+            arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
           path: users/{ID}
           method: GET
           cors: true
@@ -57,6 +63,42 @@ functions:
           path: users/{ID}
           method: POST 
           cors: true
+  getPresignedUrl:
+    handler: lambdas/uploads/getPresignedUrl.handler
+    events:
+      - http:
+          authorizer:
+            arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
+          path: get-presigned-url/
+          method: POST
+          cors: true
+  initializeUpload:
+    handler: lambdas/uploads/initiateUpload.handler
+    events:
+      - http:
+          method: POST
+          path: initiate-upload/
+          cors: true
+          authorizer:
+            arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
+  abortMultipartUpload:
+    handler: lambdas/uploads/abortUpload.handler
+    events:
+      - http:
+          method: POST
+          path: abort-multi-upload/
+          cors: true
+          authorizer:
+            arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
+  completeMultiUpload:
+    handler: lambdas/uploads/completeMultiUpload.handler
+    events:
+      - http:
+          method: POST
+          path: complete-upload/
+          cors: true
+          authorizer:
+            arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
 
 resources:
   Resources:
