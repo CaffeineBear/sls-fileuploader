@@ -3,6 +3,7 @@ const Responses = (statusCode, data) => {
     'Content-Type': 'application/json',
     'Access-Control-Allow-Methods' : '*',
     'Access-Control-Allow-Origin' : '*',
+    'Access-Control-Allow-Credentials': true,
   }
 
   switch(statusCode) {

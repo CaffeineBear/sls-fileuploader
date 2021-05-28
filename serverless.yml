@@ -16,6 +16,7 @@ provider:
     - Effect: Allow
       Action: 
         - dynamodb:*
+        - s3:*
       Resource: '*'
 
 plugins:
@@ -65,6 +66,8 @@ functions:
           cors: true
   getPresignedUrl:
     handler: lambdas/uploads/getPresignedUrl.handler
+    layers:
+      - arn:aws:lambda:ap-southeast-2:467075367265:layer:aws-sdk-latest-nodejs:1
     events:
       - http:
           authorizer:
@@ -74,6 +77,8 @@ functions:
           cors: true
   initializeUpload:
     handler: lambdas/uploads/initiateUpload.handler
+    layers:
+      - arn:aws:lambda:ap-southeast-2:467075367265:layer:aws-sdk-latest-nodejs:1
     events:
       - http:
           method: POST
@@ -83,6 +88,8 @@ functions:
             arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
   abortMultipartUpload:
     handler: lambdas/uploads/abortUpload.handler
+    layers:
+      - arn:aws:lambda:ap-southeast-2:467075367265:layer:aws-sdk-latest-nodejs:1
     events:
       - http:
           method: POST
@@ -92,6 +99,8 @@ functions:
             arn:  arn:aws:cognito-idp:ap-southeast-2:467075367265:userpool/ap-southeast-2_9adAj9ffv
   completeMultiUpload:
     handler: lambdas/uploads/completeMultiUpload.handler
+    layers:
+      - arn:aws:lambda:ap-southeast-2:467075367265:layer:aws-sdk-latest-nodejs:1
     events:
       - http:
           method: POST
